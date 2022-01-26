@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import javax.script.ScriptEngine;
 import java.util.UUID;
 
 @Service
@@ -26,5 +27,30 @@ public class RedisService {
         String id = (String) vop.get(token);
 
         return id;
+    }
+
+    public String getConditionFile(String token, String conditionFile){
+        ValueOperations<String, Object> vop = redisTemplate.opsForValue();
+        String id = this.checkId(token);
+
+        if(id != null){
+            vop.set(id+"_conditionFile",conditionFile);
+        }
+        System.out.println(vop.get(id+"_conditionFile"));
+
+        return id+"_conditionFile";
+    }
+
+    public void exTask(String id){
+        ValueOperations<String, Object> vop = redisTemplate.opsForValue();
+        vop.set(id+"_engineVal","id is "+id);
+    }
+
+    public void testWork(String id, ScriptEngine engine){
+        ValueOperations<String, Object> vop = redisTemplate.opsForValue();
+        String engineVal = vop.get(id+"_engineVal").toString();
+        System.out.println(engineVal);
+        engine.put("engineVal",engineVal);
+        System.out.println(id+" engineVal : "+engine.get("engineVal").toString());
     }
 }
