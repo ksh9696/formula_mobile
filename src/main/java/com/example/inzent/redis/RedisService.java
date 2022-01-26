@@ -51,6 +51,8 @@ public class RedisService {
         String engineVal = vop.get(id+"_engineVal").toString();
         System.out.println(engineVal);
         engine.put("engineVal",engineVal);
+    }
+    public void testWork2(String id, ScriptEngine engine){
         System.out.println(id+" engineVal : "+engine.get("engineVal").toString());
     }
 }

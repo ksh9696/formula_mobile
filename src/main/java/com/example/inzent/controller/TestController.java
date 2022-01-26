@@ -96,6 +96,16 @@ public class TestController {
         return "thread start";
     }
 
+    @RequestMapping(value = "/checkEngineVal", method = RequestMethod.POST)
+    public String checkEngineVal(HttpServletRequest request){
+        String token = jwtTokenProvider.resolveToken(request);
+        String id = redisService.checkId(token);
+        //threadService.searchingThread2(id);
+        //ThreadDemo demo = (ThreadDemo)threadService.searchingThread(id);
+
+        return "thread start";
+    }
+
     @RequestMapping(value = "/interrupThread", method = RequestMethod.POST)
     public String interrupThread(HttpServletRequest request){
         String token = jwtTokenProvider.resolveToken(request);
