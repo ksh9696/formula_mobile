@@ -2,17 +2,21 @@ package com.example.inzent.bizrule;
 
 
 import com.example.inzent.redis.RedisService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 public class ThreadDemo implements Runnable {
+    protected Log logger = LogFactory.getLog(getClass());
     private String id;
     private Thread mThread;
 
     private boolean mStop = false;
     private boolean mPause = false;
-    private int processTest=0;
+    private int processTest=1;
     //private RedisTemplate<String, Object> redisTemplate;
     private RedisService redisService;
     public ThreadDemo(String id, RedisService redisService) {
@@ -23,7 +27,7 @@ public class ThreadDemo implements Runnable {
     @Override
     public void run() {
         Thread.currentThread().setName(id);
-        System.out.println(id+" thread 실행중");
+        logger.info(id+"Thread start");
         ScriptEngineManager engineManager = new ScriptEngineManager();
         ScriptEngine engine = engineManager.getEngineByName("js");
 
@@ -34,14 +38,14 @@ public class ThreadDemo implements Runnable {
                     //this.setProcessTest(1);
                     while(mPause) {
                         if(processTest == 1){
-                            redisService.exTask(id);
+                            //redisService.exTask(id);
                             redisService.testWork(id,engine);
-                            System.out.println("");
-                            this.pause();
+                            mPause=false;
+                            //this.pause();
                             //this.setProcessTest(0);
                         }else if(processTest == 2){
                             redisService.testWork2(id,engine);
-                            this.pause();
+                            mPause=false;
                             //this.setProcessTest(0);
                         }else{
                             wait();
@@ -61,16 +65,17 @@ public class ThreadDemo implements Runnable {
     public void pause() {
         mPause = true;
     }
-
-    public synchronized void resume() {
-        mPause = false;
-        notify();
-    }
+//
+   // public synchronized void resume() {
+   //     mPause = false;
+   //     notify();
+   // }
 
     public void setProcessTest(String id, int processTest){
         this.processTest = processTest;
-        this.id = id;
+        this.pause();
+        //this.id = id;
         //this.pause();
-        notify();
+       // notify();
     }
 }

@@ -1,6 +1,7 @@
 package com.example.inzent.controller;
 
 import com.example.inzent.bizrule.BizFileReader;
+import com.example.inzent.bizrule.ThreadDemo;
 import com.example.inzent.bizrule.ThreadService;
 import com.example.inzent.jwt.JwtTokenProvider;
 import com.example.inzent.redis.RedisService;
@@ -51,10 +52,9 @@ public class TestController {
         String token = jwtTokenProvider.createToken();
         //아이디 redis에 저장
         String id= redisService.sign(token);
-        System.out.println("SIGN TEST : "+token);
-        System.out.println("SIGN TEST : "+id);
-
-        return "SUCCESS";
+        log.info("TOKEN :"+ token);
+        log.info("ID :"+ id);
+        return token;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -96,12 +96,28 @@ public class TestController {
         return "thread start";
     }
 
-    @RequestMapping(value = "/checkEngineVal", method = RequestMethod.POST)
-    public String checkEngineVal(HttpServletRequest request){
+    @RequestMapping(value = "/checkEngineVal1", method = RequestMethod.POST)
+    public String checkEngineVal1(HttpServletRequest request){
         String token = jwtTokenProvider.resolveToken(request);
         String id = redisService.checkId(token);
-        //threadService.searchingThread2(id);
-        //ThreadDemo demo = (ThreadDemo)threadService.searchingThread(id);
+
+        ThreadDemo demo = threadService.searchingThread(id);
+        demo.setProcessTest(id,1);
+
+
+        return "thread start";
+    }
+
+    @RequestMapping(value = "/checkEngineVal2", method = RequestMethod.POST)
+    public String checkEngineVal2(HttpServletRequest request){
+        String token = jwtTokenProvider.resolveToken(request);
+        String id = redisService.checkId(token);
+        //threadService.searchingThread(id);
+       //Thread thread = threadService.searchingThread(id);
+        ThreadDemo demo = threadService.searchingThread(id);
+       //ThreadDemo demoThread = (ThreadDemo) thread;
+       demo.setProcessTest(id,2);
+
 
         return "thread start";
     }
@@ -112,15 +128,5 @@ public class TestController {
         String id = redisService.checkId(token);
         threadService.interrupThread(id);
         return "thread interrup";
-    }
-
-    @RequestMapping(value = "/engineVal", method = RequestMethod.POST)
-    public String engineVal(HttpServletRequest request){
-        String token = jwtTokenProvider.resolveToken(request);
-        String id = redisService.checkId(token);
-
-        //redis  저장
-        redisService.exTask(id);
-        return "thread test";
     }
 }

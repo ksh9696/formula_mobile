@@ -24,12 +24,10 @@ public class BizFileReader {
         List<String> content=null;
         String conditonFile=null;
         try {
-            //file = new ClassPathResource("file/TST_"+scrnNm+"_condition.xml").getFile();
             ClassPathResource resource = new ClassPathResource("file/TST_"+scrnNm+"_condition.xml");
             file = resource.getFile();
             Path path = Paths.get(resource.getURI());
             content = Files.readAllLines(path);
-            //content.forEach(System.out::println);
 
             StringBuilder sb = new StringBuilder();
             for(String str:content){

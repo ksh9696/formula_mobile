@@ -1,5 +1,6 @@
 package com.example.inzent.redis;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.script.ScriptEngine;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class RedisService {
     @Autowired
@@ -37,22 +39,19 @@ public class RedisService {
             vop.set(id+"_conditionFile",conditionFile);
         }
         System.out.println(vop.get(id+"_conditionFile"));
+        log.info("REDIS PUT CONDITION : "+id+"_conditionFile");
 
         return id+"_conditionFile";
     }
 
-    public void exTask(String id){
-        ValueOperations<String, Object> vop = redisTemplate.opsForValue();
-        vop.set(id+"_engineVal","id is "+id);
-    }
-
     public void testWork(String id, ScriptEngine engine){
         ValueOperations<String, Object> vop = redisTemplate.opsForValue();
+        vop.set(id+"_engineVal","id is "+id);
         String engineVal = vop.get(id+"_engineVal").toString();
-        System.out.println(engineVal);
+        log.info("ENGINE PUT VALUE : "+engineVal);
         engine.put("engineVal",engineVal);
     }
     public void testWork2(String id, ScriptEngine engine){
-        System.out.println(id+" engineVal : "+engine.get("engineVal").toString());
+        log.info("ENGINE GET VALUE : "+engine.get("engineVal").toString());
     }
 }
