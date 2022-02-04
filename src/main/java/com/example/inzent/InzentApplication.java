@@ -10,9 +10,8 @@ import java.util.Map;
 @SpringBootApplication
 public class InzentApplication {
 
-    public static Map<String, ThreadDemo> demoList = new HashMap<>();
+   // public static Map<String, ThreadDemo> demoList = new HashMap<>();
     public static void main(String[] args) {
-
         SpringApplication.run(InzentApplication.class, args);
     }
 }

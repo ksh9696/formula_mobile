@@ -16,6 +16,7 @@ public class BizFileReader {
     //화면 번호에 해당하는 파일 읽기
 
     /*
+     *condition file 읽어 String으로 변환
      *@param scrnNm 화면번호
      */
     public String bizFileReader(String scrnNm){

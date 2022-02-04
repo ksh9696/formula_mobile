@@ -15,19 +15,21 @@ import java.util.Set;
 
 @Slf4j
 @Service
-public class ThreadService {
+public class                                                                                                                                                                ThreadService {
 
     @Autowired
     @Qualifier("executor")
     private ThreadPoolTaskExecutor executor;
 
+    @Autowired
+    private DemoList demoList;
 
 
 
     //스레드 생성이벤트
     public void executeThread(String id, RedisService redisService){
         ThreadDemo demo = new ThreadDemo(id, redisService);
-        InzentApplication.demoList.put(id,demo);
+        demoList.getDemoList().put(id,demo);
         executor.execute(demo);
     }
 
@@ -37,6 +39,7 @@ public class ThreadService {
        for(Thread t : threadSet){
            if(t.getName().equals(id)){
                t.interrupt();
+               demoList.getDemoList().remove(id);
                log.info(id+"_Thread end");
            }
        }
@@ -54,9 +57,9 @@ public class ThreadService {
    //    return thread;
    //}
     public ThreadDemo searchingThread(String id){
-        for( String key : InzentApplication.demoList.keySet() ){
+        for( String key : demoList.getDemoList().keySet() ){
             if(key.equals(id)){
-               ThreadDemo demo = InzentApplication.demoList.get(key);
+               ThreadDemo demo = demoList.getDemoList().get(key);
                return demo;
             }
         }

@@ -1,6 +1,7 @@
 package com.example.inzent.controller;
 
 import com.example.inzent.bizrule.BizFileReader;
+import com.example.inzent.bizrule.DemoList;
 import com.example.inzent.bizrule.ThreadDemo;
 import com.example.inzent.bizrule.ThreadService;
 import com.example.inzent.jwt.JwtTokenProvider;
@@ -8,9 +9,7 @@ import com.example.inzent.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,9 +24,11 @@ public class TestController {
     BizFileReader bizFileReader;
     @Autowired
     ThreadService threadService;
+    @Autowired
+    DemoList demoList;
 
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping(value = "/")
     public Object test(HttpServletRequest request){
         String id=null;
         //토큰값 얻기
@@ -46,7 +47,7 @@ public class TestController {
         return "Hello World";
     }
 
-    @RequestMapping(value = "/sign", method = RequestMethod.POST)
+    @PostMapping(value = "/sign")
     public String sign() {
        //토큰 생성
         String token = jwtTokenProvider.createToken();
@@ -93,6 +94,11 @@ public class TestController {
         String token = jwtTokenProvider.resolveToken(request);
         String id = redisService.checkId(token);
         threadService.executeThread(id, redisService);
+
+        //스레드 생성시  list log 확인
+        for(String key : demoList.getDemoList().keySet()){
+            log.info("LIST CHECK : "+ key);
+        }
         return "thread start";
     }
 
@@ -123,10 +129,13 @@ public class TestController {
     }
 
     @RequestMapping(value = "/interrupThread", method = RequestMethod.POST)
-    public String interrupThread(HttpServletRequest request){
+public String interrupThread(HttpServletRequest request){
         String token = jwtTokenProvider.resolveToken(request);
         String id = redisService.checkId(token);
+        redisService.deleteRedisValue(token,id);
         threadService.interrupThread(id);
         return "thread interrup";
-    }
-}
+        }
+        }
+
+

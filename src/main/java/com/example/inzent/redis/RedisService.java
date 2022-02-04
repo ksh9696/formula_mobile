@@ -1,5 +1,6 @@
 package com.example.inzent.redis;
 
+import com.example.inzent.config.RedisKeyObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,6 +23,12 @@ public class RedisService {
         String id = UUID.randomUUID().toString().replace("-","");
         vop.set(token, id);
         return id;
+    }
+
+    public void deleteRedisValue(String token, String id){
+        redisTemplate.delete(token);
+        redisTemplate.delete(id+ RedisKeyObject.CONDITION_FILE);
+        redisTemplate.delete(id+ RedisKeyObject.ENGINE_VALUE);
     }
 
     public String checkId(String token) {
