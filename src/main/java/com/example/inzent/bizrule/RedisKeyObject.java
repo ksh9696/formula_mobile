@@ -1,4 +1,4 @@
-package com.example.inzent.config;
+package com.example.inzent.bizrule;
 
 public class RedisKeyObject {
 

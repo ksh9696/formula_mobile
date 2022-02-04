@@ -37,7 +37,7 @@ public class TestController {
             //토큰 생성
             token = jwtTokenProvider.createToken();
             //아이디 redis에 저장
-            id= redisService.sign(token);
+            id= redisService.getUUID(token);
             System.out.println("SIGN TEST : "+token);
             System.out.println("SIGN TEST : "+id);
         }
@@ -47,52 +47,19 @@ public class TestController {
         return "Hello World";
     }
 
-    @PostMapping(value = "/sign")
-    public String sign() {
-       //토큰 생성
+    /*
+     *request 에 대한 token발행 & UUID발급하여 redis에 저장 & thread start
+     */
+    @PostMapping(value = "/executeThread")
+    public String executeThread() {
+        //토큰 생성
         String token = jwtTokenProvider.createToken();
         //아이디 redis에 저장
-        String id= redisService.sign(token);
+        String id= redisService.getUUID(token);
         log.info("TOKEN :"+ token);
         log.info("ID :"+ id);
-        return token;
-    }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String accessUser(HttpServletRequest request){
-        //토큰값 얻기
-        String token = jwtTokenProvider.resolveToken(request);
-        if(jwtTokenProvider.validateToken(token)){
-            //id값 얻기
-            String id = redisService.checkId(token);
-            if(id != null){
-                System.out.println("LOGIN TEST : "+id);
-                return "SUCCESS";
-            }
-        }
-        return "redirect 로그를 확인하세요";
-    }
-
-    /*
-    *@param scrnNm 화면번호
-    *@HttpServletRequest request
-    */
-    @RequestMapping(value = "/getConditionFile", method = RequestMethod.POST)
-    public String getFileInfo(String scrnNm, HttpServletRequest request){
-        //토큰값 얻기
-        String token = jwtTokenProvider.resolveToken(request);
-
-        //condition파일 읽고, id 값 가져오기
-        String conditionFile = bizFileReader.bizFileReader(scrnNm);
-        String id_conditionFile = redisService.getConditionFile(token,conditionFile);
-
-        return id_conditionFile;
-    }
-
-    @RequestMapping(value = "/executeThread", method = RequestMethod.POST)
-    public String executeThread(HttpServletRequest request){
-        String token = jwtTokenProvider.resolveToken(request);
-        String id = redisService.checkId(token);
+        //thread 생성
         threadService.executeThread(id, redisService);
 
         //스레드 생성시  list log 확인
@@ -102,8 +69,27 @@ public class TestController {
         return "thread start";
     }
 
-    @RequestMapping(value = "/checkEngineVal1", method = RequestMethod.POST)
-    public String checkEngineVal1(HttpServletRequest request){
+    /*
+     *redis 에 Condition.xml 파일 저장 메서드
+     *return String scrnNm 화면 변호
+     */
+    @RequestMapping(value = "/getFullConditionFile", method = RequestMethod.POST)
+    public String getFullConditionFile(String scrnNm, HttpServletRequest request){
+        //토큰값 얻기
+        String token = jwtTokenProvider.resolveToken(request);
+
+        //condition파일 읽고, id 값 가져오기
+        String conditionFile = bizFileReader.bizFileReader(scrnNm);
+        redisService.getFullConditionFile(token,conditionFile);
+
+        return "get conditionfile";
+    }
+
+    /*
+     *redis & thread에 임의의 값 input
+     */
+    @RequestMapping(value = "/checkInputValue", method = RequestMethod.POST)
+    public String checkInputValue(HttpServletRequest request){
         String token = jwtTokenProvider.resolveToken(request);
         String id = redisService.checkId(token);
 
@@ -111,11 +97,14 @@ public class TestController {
         demo.setProcessTest(id,1);
 
 
-        return "thread start";
+        return "input data";
     }
 
-    @RequestMapping(value = "/checkEngineVal2", method = RequestMethod.POST)
-    public String checkEngineVal2(HttpServletRequest request){
+    /*
+     *redis & thread에 임의의 값 output
+     */
+    @RequestMapping(value = "/checkOutputValue", method = RequestMethod.POST)
+    public String checkOutputValue(HttpServletRequest request){
         String token = jwtTokenProvider.resolveToken(request);
         String id = redisService.checkId(token);
         //threadService.searchingThread(id);
@@ -128,6 +117,9 @@ public class TestController {
         return "thread start";
     }
 
+    /*
+     *thread 종료 & 관련 redis데이터 삭제
+     */
     @RequestMapping(value = "/interrupThread", method = RequestMethod.POST)
 public String interrupThread(HttpServletRequest request){
         String token = jwtTokenProvider.resolveToken(request);
@@ -136,6 +128,19 @@ public String interrupThread(HttpServletRequest request){
         threadService.interrupThread(id);
         return "thread interrup";
         }
+
+    /*
+     *ThreadDemo list확인
+     */
+    @PostMapping(value = "/checkDemoList")
+    public String checkDemoList() {
+        //스레드 생성시  list log 확인
+        String fullDemoList = "";
+        for (String key : demoList.getDemoList().keySet()) {
+            fullDemoList += key+"/n";
         }
+        return fullDemoList;
+    }
+}
 
 

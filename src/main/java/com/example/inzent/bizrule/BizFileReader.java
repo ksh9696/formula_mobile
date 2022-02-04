@@ -13,11 +13,15 @@ import java.util.List;
 @Component
 public class BizFileReader {
 
-    //화면 번호에 해당하는 파일 읽기
-
     /*
      *condition file 읽어 String으로 변환
      *@param scrnNm 화면번호
+     * return String conditionFile
+     *    ex)  if(PDT_GUD_MRKTNG_WRCNT_RQSD_YN == "10") {
+
+	               setProcessId("TST_999999999_F_002"); //고객기본정보관리TEST
+
+	            }
      */
     public String bizFileReader(String scrnNm){
         //1. condition load

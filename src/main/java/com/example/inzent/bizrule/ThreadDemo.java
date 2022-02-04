@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+//customized Thread
 public class ThreadDemo implements Runnable {
     protected Log logger = LogFactory.getLog(getClass());
     private String id;
@@ -16,7 +17,7 @@ public class ThreadDemo implements Runnable {
 
     private boolean mStop = false;
     private boolean mPause = false;
-    private int processTest=1;
+    private int processTest=0; //1일 때 임의의 값 저장, 2일 때 값 return
     //private RedisTemplate<String, Object> redisTemplate;
     private RedisService redisService;
     public ThreadDemo(String id, RedisService redisService) {
@@ -34,17 +35,15 @@ public class ThreadDemo implements Runnable {
         try {
             while(!mStop) {
                 synchronized(this) {
-                    //redis 확인
-                    //this.setProcessTest(1);
                     while(mPause) {
                         if(processTest == 1){
                             //redisService.exTask(id);
-                            redisService.testWork(id,engine);
+                            redisService.ckeckInputValue(id,engine);
                             mPause=false;
                             //this.pause();
                             //this.setProcessTest(0);
                         }else if(processTest == 2){
-                            redisService.testWork2(id,engine);
+                            redisService.ckeckOutputValue(engine);
                             mPause=false;
                             //this.setProcessTest(0);
                         }else{
@@ -74,8 +73,5 @@ public class ThreadDemo implements Runnable {
     public void setProcessTest(String id, int processTest){
         this.processTest = processTest;
         this.pause();
-        //this.id = id;
-        //this.pause();
-       // notify();
     }
 }

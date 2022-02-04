@@ -25,15 +25,21 @@ public class                                                                    
     private DemoList demoList;
 
 
-
-    //스레드 생성이벤트
+    /*
+     *스레드 생성이벤트
+     *@param id  UUID
+     *@param redisService
+     */
     public void executeThread(String id, RedisService redisService){
         ThreadDemo demo = new ThreadDemo(id, redisService);
         demoList.getDemoList().put(id,demo);
         executor.execute(demo);
     }
 
-    //스레드 종료 이벤트
+    /*
+     *스레드 종료 이벤트
+     *@param id  UUID
+     */
     public void interrupThread(String id){
        Set<Thread>threadSet = Thread.getAllStackTraces().keySet();
        for(Thread t : threadSet){
@@ -45,17 +51,10 @@ public class                                                                    
        }
     }
 
-    //id에 맞는 thread 찾기
-   //public Thread searchingThread(String id){
-   //    Set<Thread>threadSet = Thread.getAllStackTraces().keySet();
-   //    Thread thread = new Thread();
-   //    for(Thread t : threadSet){
-   //        if(t.getName().equals(id)){
-   //            thread = t;
-   //        }
-   //    }
-   //    return thread;
-   //}
+    /*
+     *id값에 해당하는 스레드 찾는 메서드
+     *@param id  UUID
+     */
     public ThreadDemo searchingThread(String id){
         for( String key : demoList.getDemoList().keySet() ){
             if(key.equals(id)){

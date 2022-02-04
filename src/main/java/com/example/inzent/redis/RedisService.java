@@ -1,6 +1,6 @@
 package com.example.inzent.redis;
 
-import com.example.inzent.config.RedisKeyObject;
+import com.example.inzent.bizrule.RedisKeyObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,7 +17,12 @@ public class RedisService {
     RedisTemplate<String, Object> redisTemplate;
     //private final Logger logger = LoggerFactory.getLogger(RedisService.class);
 
-    public String sign(String token) {
+    /*
+     *UUID발급하여 redis에 저장하는 메서드
+     *@param token
+     *return id UUID
+     */
+    public String getUUID(String token) {
         //hashmap같은 key value 구조
         ValueOperations<String, Object> vop = redisTemplate.opsForValue();
         String id = UUID.randomUUID().toString().replace("-","");
@@ -25,12 +30,22 @@ public class RedisService {
         return id;
     }
 
+    /*
+     *redis에 해당 데이터 삭제 메서드
+     *@param token
+     *return id UUID
+     */
     public void deleteRedisValue(String token, String id){
         redisTemplate.delete(token);
         redisTemplate.delete(id+ RedisKeyObject.CONDITION_FILE);
         redisTemplate.delete(id+ RedisKeyObject.ENGINE_VALUE);
     }
 
+    /*
+     *redis key 값에 저장된 token 에 해당하는 UUID 값 return하는 메서드
+     *@param token
+     *return id UUID값
+     */
     public String checkId(String token) {
         ValueOperations<String, Object> vop = redisTemplate.opsForValue();
         String id = (String) vop.get(token);
@@ -38,7 +53,12 @@ public class RedisService {
         return id;
     }
 
-    public String getConditionFile(String token, String conditionFile){
+    /*
+     *redis에 condition파일 저장 메서드
+     *@param token
+     *@param String conditionFile
+     */
+    public void getFullConditionFile(String token, String conditionFile){
         ValueOperations<String, Object> vop = redisTemplate.opsForValue();
         String id = this.checkId(token);
 
@@ -46,19 +66,34 @@ public class RedisService {
             vop.set(id+"_conditionFile",conditionFile);
         }
         System.out.println(vop.get(id+"_conditionFile"));
-        log.info("REDIS PUT CONDITION : "+id+"_conditionFile");
+        log.info("INPUT CONDITION FILE IN REDIS  : "+id+"_conditionFile");
 
-        return id+"_conditionFile";
     }
 
-    public void testWork(String id, ScriptEngine engine){
+    /*
+     *redis & ScriptEngine에 임의의 값 저장 메서드
+     *@param String id
+     *@param ScriptEngine engine
+     *
+     * redis(key : sdjflsjdfskdfjlas342lfl_engineVal, value : id is sdjflsjdfskdfjlas342lfl)
+     * engine(key : engineVal, value : id is sdjflsjdfskdfjlas342lfl)
+     */
+    public void ckeckInputValue(String id, ScriptEngine engine){
         ValueOperations<String, Object> vop = redisTemplate.opsForValue();
+        //redis에 저장
         vop.set(id+"_engineVal","id is "+id);
         String engineVal = vop.get(id+"_engineVal").toString();
-        log.info("ENGINE PUT VALUE : "+engineVal);
+        log.info("INPUT ID VALUE IN ENGINE : "+engineVal);
+        //engine 에 저장
         engine.put("engineVal",engineVal);
     }
-    public void testWork2(String id, ScriptEngine engine){
-        log.info("ENGINE GET VALUE : "+engine.get("engineVal").toString());
+
+    /*
+     *해당 thread에서 동작하는 ScriptEngine 값 확인 메서드
+     *@param String id
+     *@param ScriptEngine engine
+     */
+    public void ckeckOutputValue(ScriptEngine engine){
+        log.info("RETURN ENGINE VALUE : "+engine.get("engineVal").toString());
     }
 }

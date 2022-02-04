@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 
+//Thread List 전역으로 관리하기 위한 Component
 @Data
 @Component
 public class DemoList {
