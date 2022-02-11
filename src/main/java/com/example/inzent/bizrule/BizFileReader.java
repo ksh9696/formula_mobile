@@ -2,7 +2,15 @@ package com.example.inzent.bizrule;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,26 +31,27 @@ public class BizFileReader {
 
 	            }
      */
-    public String bizFileReader(String scrnNm){
+    public String bizFileReader(String scrnNm) {
         //1. condition load
-        File file=null;
-        List<String> content=null;
-        String conditonFile=null;
+        File file = null;
+        List<String> content = null;
+        String conditonFile = null;
         try {
-            ClassPathResource resource = new ClassPathResource("file/TST_"+scrnNm+"_condition.xml");
+            ClassPathResource resource = new ClassPathResource("file/TST_" + scrnNm + "_condition.xml");
             file = resource.getFile();
             Path path = Paths.get(resource.getURI());
             content = Files.readAllLines(path);
 
             StringBuilder sb = new StringBuilder();
-            for(String str:content){
-               sb.append(str+"\n").toString();
+            for (String str : content) {
+                sb.append(str + "\n").toString();
             }
             conditonFile = sb.toString();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-       return conditonFile;
+        return conditonFile;
     }
+
 }

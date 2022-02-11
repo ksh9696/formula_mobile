@@ -5,6 +5,7 @@ import com.example.inzent.redis.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.simple.JSONObject;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -18,6 +19,11 @@ public class ThreadDemo implements Runnable {
     private boolean mStop = false;
     private boolean mPause = false;
     private int processTest=0; //1일 때 임의의 값 저장, 2일 때 값 return
+    private JSONObject requiredItem = new JSONObject();
+
+    ScriptEngineManager engineManager = new ScriptEngineManager();
+    ScriptEngine engine = engineManager.getEngineByName("js");
+
     //private RedisTemplate<String, Object> redisTemplate;
     private RedisService redisService;
     public ThreadDemo(String id, RedisService redisService) {
@@ -29,23 +35,33 @@ public class ThreadDemo implements Runnable {
     public void run() {
         Thread.currentThread().setName(id);
         logger.info(id+"Thread start");
-        ScriptEngineManager engineManager = new ScriptEngineManager();
-        ScriptEngine engine = engineManager.getEngineByName("js");
+        //ScriptEngineManager engineManager = new ScriptEngineManager();
+        //ScriptEngine engine = engineManager.getEngineByName("js");
 
         try {
             while(!mStop) {
                 synchronized(this) {
                     while(mPause) {
-                        if(processTest == 1){
+                        if (processTest == 1) {
                             //redisService.exTask(id);
-                            redisService.ckeckInputValue(id,engine);
-                            mPause=false;
+                            redisService.ckeckInputValue(id, engine);
+                            mPause = false;
                             //this.pause();
                             //this.setProcessTest(0);
-                        }else if(processTest == 2){
+                        } else if (processTest == 2) {
                             redisService.ckeckOutputValue(engine);
-                            mPause=false;
+                            mPause = false;
                             //this.setProcessTest(0);
+                        } else if (processTest == 3) {
+                            //redis&engine에 저장
+                            redisService.inputCommonFunction(engine);
+                            JSONObject ob = redisService.makeConditionFile(engine);
+                            System.out.println(ob.toJSONString());
+                            mPause = false;
+                        }else if(processTest ==4){
+                            String processId = redisService.onPreProcess(id, engine, requiredItem);
+                            System.out.println("TEST :" + processId);
+                            mPause = false;
                         }else{
                             wait();
                         }
@@ -73,5 +89,9 @@ public class ThreadDemo implements Runnable {
     public void setProcessTest(String id, int processTest){
         this.processTest = processTest;
         this.pause();
+    }
+
+    public void setRequiredItem(JSONObject requiredItem){
+        this.requiredItem = requiredItem;
     }
 }

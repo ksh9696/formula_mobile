@@ -8,9 +8,12 @@ import com.example.inzent.jwt.JwtTokenProvider;
 import com.example.inzent.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.script.ScriptEngine;
 import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
@@ -27,26 +30,6 @@ public class TestController {
     @Autowired
     DemoList demoList;
 
-
-    @GetMapping(value = "/")
-    public Object test(HttpServletRequest request){
-        String id=null;
-        //토큰값 얻기
-        String token = jwtTokenProvider.resolveToken(request);
-        if(token == null){
-            //토큰 생성
-            token = jwtTokenProvider.createToken();
-            //아이디 redis에 저장
-            id= redisService.getUUID(token);
-            System.out.println("SIGN TEST : "+token);
-            System.out.println("SIGN TEST : "+id);
-        }
-        if(id == null){
-            id = redisService.checkId(token);
-        }
-        return "Hello World";
-    }
-
     /*
      *request 에 대한 token발행 & UUID발급하여 redis에 저장 & thread start
      */
@@ -62,18 +45,17 @@ public class TestController {
         //thread 생성
         threadService.executeThread(id, redisService);
 
-        //스레드 생성시  list log 확인
-        for(String key : demoList.getDemoList().keySet()){
-            log.info("LIST CHECK : "+ key);
-        }
-        return "thread start";
+        //해당 thread engine에 공통함수 입력
+        ThreadDemo demo = threadService.searchingThread(id);
+        demo.setProcessTest(id,3);
+
+        return token;
     }
 
     /*
      *redis 에 Condition.xml 파일 저장 메서드
-     *return String scrnNm 화면 변호
      */
-    @RequestMapping(value = "/getFullConditionFile", method = RequestMethod.POST)
+    @PostMapping(value = "/getFullConditionFile")
     public String getFullConditionFile(String scrnNm, HttpServletRequest request){
         //토큰값 얻기
         String token = jwtTokenProvider.resolveToken(request);
@@ -82,7 +64,10 @@ public class TestController {
         String conditionFile = bizFileReader.bizFileReader(scrnNm);
         redisService.getFullConditionFile(token,conditionFile);
 
-        return "get conditionfile";
+       ////파일 불러오기
+       //JSONObject ob = redisService.makeConditionFile(conditionFile);
+
+        return "getfile";
     }
 
     /*
@@ -120,7 +105,7 @@ public class TestController {
     /*
      *thread 종료 & 관련 redis데이터 삭제
      */
-    @RequestMapping(value = "/interrupThread", method = RequestMethod.POST)
+    @PostMapping(value = "/interrupThread")
 public String interrupThread(HttpServletRequest request){
         String token = jwtTokenProvider.resolveToken(request);
         String id = redisService.checkId(token);
@@ -140,6 +125,23 @@ public String interrupThread(HttpServletRequest request){
             fullDemoList += key+"/n";
         }
         return fullDemoList;
+    }
+
+    @PostMapping(value = "/getProcessId")
+    public String getProcessId(HttpServletRequest request){
+        JSONObject requiredItem = new JSONObject();
+        requiredItem.put("PDT_GUD_MRKTNG_WRCNT_RQSD_YN","10");
+        requiredItem.put("PDT_GUD_MRKTNG_WRCNT_RQSD_YN2","10");
+
+        String token = jwtTokenProvider.resolveToken(request);
+        String id = redisService.checkId(token);
+
+        //해당 thread 필수 항목 넣어서 processId얻기
+        ThreadDemo demo = threadService.searchingThread(id);
+
+        demo.setRequiredItem(requiredItem);
+        demo.setProcessTest(id,4);
+        return "test";
     }
 }
 

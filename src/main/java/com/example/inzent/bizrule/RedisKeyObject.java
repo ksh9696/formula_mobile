@@ -4,4 +4,5 @@ public class RedisKeyObject {
 
     public static final String CONDITION_FILE = "_conditionFile";
     public static final String ENGINE_VALUE = "_engineVal";
+    public static final String PROCESS_ID = "_processId";
 }
