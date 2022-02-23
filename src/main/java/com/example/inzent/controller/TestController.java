@@ -47,7 +47,7 @@ public class TestController {
 
         //해당 thread engine에 공통함수 입력
         ThreadDemo demo = threadService.searchingThread(id);
-        demo.setProcessTest(id,3);
+        demo.setProcessTest(id,1);
 
         return token;
     }
@@ -79,7 +79,7 @@ public class TestController {
         String id = redisService.checkId(token);
 
         ThreadDemo demo = threadService.searchingThread(id);
-        demo.setProcessTest(id,1);
+        demo.setProcessTest(id,2);
 
 
         return "input data";
@@ -96,7 +96,7 @@ public class TestController {
        //Thread thread = threadService.searchingThread(id);
         ThreadDemo demo = threadService.searchingThread(id);
        //ThreadDemo demoThread = (ThreadDemo) thread;
-       demo.setProcessTest(id,2);
+       demo.setProcessTest(id,3);
 
 
         return "thread start";
@@ -106,7 +106,7 @@ public class TestController {
      *thread 종료 & 관련 redis데이터 삭제
      */
     @PostMapping(value = "/interrupThread")
-public String interrupThread(HttpServletRequest request){
+    public String interrupThread(HttpServletRequest request){
         String token = jwtTokenProvider.resolveToken(request);
         String id = redisService.checkId(token);
         redisService.deleteRedisValue(token,id);

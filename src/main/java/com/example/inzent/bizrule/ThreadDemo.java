@@ -14,12 +14,13 @@ import javax.script.ScriptEngineManager;
 public class ThreadDemo implements Runnable {
     protected Log logger = LogFactory.getLog(getClass());
     private String id;
-    private Thread mThread;
+    private String strScreenID;
 
     private boolean mStop = false;
     private boolean mPause = false;
     private int processTest=0; //1일 때 임의의 값 저장, 2일 때 값 return
     private JSONObject requiredItem = new JSONObject();
+
 
     ScriptEngineManager engineManager = new ScriptEngineManager();
     ScriptEngine engine = engineManager.getEngineByName("js");
@@ -43,22 +44,19 @@ public class ThreadDemo implements Runnable {
                 synchronized(this) {
                     while(mPause) {
                         if (processTest == 1) {
-                            //redisService.exTask(id);
-                            redisService.ckeckInputValue(id, engine);
-                            mPause = false;
-                            //this.pause();
-                            //this.setProcessTest(0);
-                        } else if (processTest == 2) {
-                            redisService.ckeckOutputValue(engine);
-                            mPause = false;
-                            //this.setProcessTest(0);
-                        } else if (processTest == 3) {
-                            //redis&engine에 저장
+                            //redis&engine에 저장 & 필수항목 리턴
                             redisService.inputCommonFunction(engine);
-                            JSONObject ob = redisService.makeConditionFile(engine);
+                            JSONObject ob = redisService.makeConditionFile(engine,strScreenID);
+                            setRequiredItem(ob);
                             System.out.println(ob.toJSONString());
                             mPause = false;
-                        }else if(processTest ==4){
+                        } else if (processTest == 2) {
+                            redisService.ckeckInputValue(id, engine);
+                            mPause = false;
+                        } else if (processTest == 3) {
+                            redisService.ckeckOutputValue(engine);
+                            mPause = false;
+                        }else if(processTest == 4){
                             String processId = redisService.onPreProcess(id, engine, requiredItem);
                             System.out.println("TEST :" + processId);
                             mPause = false;
@@ -90,8 +88,12 @@ public class ThreadDemo implements Runnable {
         this.processTest = processTest;
         this.pause();
     }
-
     public void setRequiredItem(JSONObject requiredItem){
         this.requiredItem = requiredItem;
     }
+    public JSONObject getRequiredItem(){return requiredItem;}
+    public void setStrScreenID(String strScreenID){
+        this.strScreenID=strScreenID;
+    }
+    public String getStrScreenID(){return strScreenID;}
 }

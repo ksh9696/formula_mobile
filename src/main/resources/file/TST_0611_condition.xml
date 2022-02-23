@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ConditionXML CREATEDATE="20211018152442" VERSION="4">
+    <CommonInfo>
+        <CommonValue/>
+        <CommonFunction>
+            <FunctionScript><![CDATA[var isEmpty = function(value){
+	if( value == "" || value == null || value == undefined || ( value != null && typeof value == "object" && !Object.keys(value).length ) ){
+		return true;
+	}else{
+		return false;
+	}
+};]]></FunctionScript>
+            <FunctionScript><![CDATA[function lpad(s, padLength, padString){
+    while(s.length < padLength)
+        s = padString + s;
+    return s;
+}]]></FunctionScript>
+            <FunctionScript><![CDATA[function calcAge(yymmddf) {
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = (date.getMonth() + 1);
+    var day = date.getDate();
+    if (month < 10) month = '0' + month;
+    if (day < 10) day = '0' + day;
+    var monthDay = month + day;
+    var yymmdd_YY = '';
+    var yymmdd_f = yymmddf.substr(6, 1);
+    if (yymmdd_f == '1' || yymmdd_f == '2' || yymmdd_f == '5' || yymmdd_f == '6' ) {
+        yymmdd_YY = '19';
+    }else {
+        yymmdd_YY = '20';
+    }
+    var yymmdd_dayy = yymmddf.substr(0, 2);
+    yymmdd_dayy = yymmdd_YY + yymmdd_dayy;
+    var yymmdd_day_md = yymmddf.substr(2, 4);
+    var age = monthDay < yymmdd_day_md ? year - yymmdd_dayy - 1 : year - yymmdd_dayy;
+    return age;
+}]]></FunctionScript>
+        </CommonFunction>
+    </CommonInfo>
+    <CONDITION>
+        <EssentialScreenInfo ESSENTIAL="MA_tablet_paper_dsc=전자서식한영구분=04" SCD_ID="05_0611">
+            <SimulatorEssentialInfo APP_DCD="CZCM" ESSENTIAL="MA_tablet_paper_dsc=전자서식한영구분=04"/>
+            <FunctionScript DEFAULT_BIZ_PRCS_ID=""><![CDATA[function OnPreOpenProcess(){ 
+	//내용을 입력하세요.
+	if( MA_tablet_paper_dsc == "한글" ){
+        setProcessId("05_0611_F_CZCM_003");
+    }else if( MA_tablet_paper_dsc == "영문" ){
+        setProcessId("05_0611_F_CZCM_002");
+    }
+}]]></FunctionScript>
+        </EssentialScreenInfo>
+    </CONDITION>
+</ConditionXML>

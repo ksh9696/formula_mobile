@@ -1,5 +1,6 @@
 package com.example.inzent.redis;
 
+import com.example.inzent.bizrule.CommonFunc;
 import com.example.inzent.bizrule.RedisKeyObject;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import lombok.extern.slf4j.Slf4j;
@@ -117,28 +118,34 @@ public class RedisService {
 
     public void inputCommonFunction(ScriptEngine engine){
 
-        //redis에서 condition파일
-        engine.put("processId", "");
+       // //redis에서 condition파일
+       // engine.put("processId", "");
+       // try {
+       //     engine.eval("function setProcessId(val){\r\n"
+       //             + "		processId = val;\r\n"
+       //             + "	}\r\n"
+       //             + "	function getProcessId(){\r\n"
+       //             + "		return processId;\r\n"
+       //             + "	}");
+       // } catch (ScriptException e) {
+       //     e.printStackTrace();
+       // }
+
         try {
-            engine.eval("function setProcessId(val){\r\n"
-                    + "		processId = val;\r\n"
-                    + "	}\r\n"
-                    + "	function getProcessId(){\r\n"
-                    + "		return processId;\r\n"
-                    + "	}");
+            engine.eval(CommonFunc.COMMON_FUNCTION_SCRRIPT);
         } catch (ScriptException e) {
             e.printStackTrace();
+            log.error("eval error");
         }
     }
 
-
-    public JSONObject makeConditionFile(ScriptEngine engine){
+    public JSONObject makeConditionFile(ScriptEngine engine,String strScreenID) {
         //JSONArray list = new JSONArray();
         JSONObject ob = new JSONObject();
 
         try {
             //1. condition load
-            ClassPathResource resource = new ClassPathResource("file/TST_999999999_condition.xml");
+            ClassPathResource resource = new ClassPathResource("file/TST_"+strScreenID+"_condition.xml");
             File file = resource.getFile();
 
             //빌더 팩토리 생성
