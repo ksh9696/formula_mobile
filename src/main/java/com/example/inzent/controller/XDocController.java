@@ -48,8 +48,6 @@ public class XDocController {
         String token = jwtTokenProvider.createToken();
         //아이디 redis에 저장
         String id= redisService.getUUID(token);
-        log.info("TOKEN :"+ token);
-        log.info("ID :"+ id);
 
         //thread 생성
         threadService.executeThread(id, redisService);

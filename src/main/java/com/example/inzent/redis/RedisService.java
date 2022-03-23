@@ -3,6 +3,7 @@ package com.example.inzent.redis;
 import com.example.inzent.bizrule.CommonFunc;
 import com.example.inzent.bizrule.RedisKeyObject;
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.sun.org.apache.xpath.internal.objects.XObject;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -45,6 +46,9 @@ public class RedisService {
         ValueOperations<String, Object> vop = redisTemplate.opsForValue();
         String id = UUID.randomUUID().toString().replace("-","");
         vop.set(token, id);
+
+        log.info("TOKEN :"+ token);
+        log.info("ID :"+ id);
         return id;
     }
 
@@ -204,7 +208,7 @@ public class RedisService {
     }
 
     public String onPreProcess(String id, ScriptEngine engine, JSONObject requiredItem){
-        String processId = "";
+        Object processId = "";
         ValueOperations<String, Object> vop = redisTemplate.opsForValue();
         Invocable invocable = (Invocable) engine;
 
@@ -218,14 +222,14 @@ public class RedisService {
             //onpreprocess 호출
             invocable.invokeFunction("OnPreOpenProcess");
             //processId 얻기
-            processId = (String) invocable.invokeFunction("getProcessId");
-            vop.set(id+RedisKeyObject.PROCESS_ID,processId);
+            processId = invocable.invokeFunction("getProcessId");
+            //vop.set(id+RedisKeyObject.PROCESS_ID,processId);
         } catch (ScriptException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
 
-        return processId;
+        return processId.toString();
     }
 }

@@ -1,58 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ConditionXML CREATEDATE="20210811154842" VERSION="108">
-    <CommonInfo>
-        <CommonValue/>
-        <CommonFunction>
-            <FunctionScript><![CDATA[var isEmpty = function(value){
-	if( value == "" || value == null || value == undefined || ( value != null && typeof value == "object" && !Object.keys(value).length ) ){
-		return true;
-	}else{
-		return false;
-	}
-};]]></FunctionScript>
-            <FunctionScript><![CDATA[function lpad(s, padLength, padString){
-    while(s.length < padLength)
-        s = padString + s;
-    return s;
-}]]></FunctionScript>
-            <FunctionScript><![CDATA[function calcAge(yymmddf) {
-    var date = new Date();
-    var year = date.getFullYear();
-    var month = (date.getMonth() + 1);
-    var day = date.getDate();
-    if (month < 10) month = '0' + month;
-    if (day < 10) day = '0' + day;
-    var monthDay = month + day;
-    var yymmdd_YY = '';
-    var yymmdd_f = yymmddf.substr(6, 1);
-    if (yymmdd_f == '1' || yymmdd_f == '2' || yymmdd_f == '5' || yymmdd_f == '6' ) {
-        yymmdd_YY = '19';
-    }else {
-        yymmdd_YY = '20';
-    }
-    var yymmdd_dayy = yymmddf.substr(0, 2);
-    yymmdd_dayy = yymmdd_YY + yymmdd_dayy;
-    var yymmdd_day_md = yymmddf.substr(2, 4);
-    var age = monthDay < yymmdd_day_md ? year - yymmdd_dayy - 1 : year - yymmdd_dayy;
-    return age;
-}]]></FunctionScript>
-            <FunctionScript><![CDATA[String.prototype.replaceAll = function(org, dest) {
-    return this.split(org).join(dest);
-}]]></FunctionScript>
-        </CommonFunction>
-    </CommonInfo>
-    <CONDITION>
-        <EssentialScreenInfo ESSENTIAL="PDT_GUD_MRKTNG_WRCNT_RQSD_Yobj=상품안내마케팅동의서징구여부=02" SCD_ID="TST_999999999">
-            <SimulatorEssentialInfo APP_DCD="TST" ESSENTIAL="PDT_GUD_MRKTNG_WRCNT_RQSD_YN=상품안내마케팅동의서징구여부=02@PDT_GUD_MRKTNG_WRCNT_RQSD_YN2=상품안내마케팅동의서징구여부2=03"/>
-            <FunctionScript DEFAULT_BIZ_PRCS_ID=""><![CDATA[
-function OnPreOpenProcess(){	//999999999 함수
-	if(PDT_GUD_MRKTNG_WRCNT_RQSD_YN == "10") {
-	    setProcessId("TST_999999999_F_002"); //고객기본정보관리TEST
-	}else {
-	    setProcessId("TST_999999999_F_001"); //프로세스ID
-	    ///////  
-	}
-}]]></FunctionScript>
-        </EssentialScreenInfo>
-    </CONDITION>
-</ConditionXML>
+<?xml version="1.0" encoding="UTF-8"?><ConditionXML CREATEDATE="20210811154842" VERSION="108">    <CommonInfo>        <CommonValue/>        <CommonFunction>            <FunctionScript><![CDATA[var isEmpty = function(value){	if( value == "" || value == null || value == undefined || ( value != null && typeof value == "object" && !Object.keys(value).length ) ){		return true;	}else{		return false;	}};]]></FunctionScript>            <FunctionScript><![CDATA[function lpad(s, padLength, padString){    while(s.length < padLength)        s = padString + s;    return s;}]]></FunctionScript>            <FunctionScript><![CDATA[function calcAge(yymmddf) {    var date = new Date();    var year = date.getFullYear();    var month = (date.getMonth() + 1);    var day = date.getDate();    if (month < 10) month = '0' + month;    if (day < 10) day = '0' + day;    var monthDay = month + day;    var yymmdd_YY = '';    var yymmdd_f = yymmddf.substr(6, 1);    if (yymmdd_f == '1' || yymmdd_f == '2' || yymmdd_f == '5' || yymmdd_f == '6' ) {        yymmdd_YY = '19';    }else {        yymmdd_YY = '20';    }    var yymmdd_dayy = yymmddf.substr(0, 2);    yymmdd_dayy = yymmdd_YY + yymmdd_dayy;    var yymmdd_day_md = yymmddf.substr(2, 4);    var age = monthDay < yymmdd_day_md ? year - yymmdd_dayy - 1 : year - yymmdd_dayy;    return age;}]]></FunctionScript>            <FunctionScript><![CDATA[String.prototype.replaceAll = function(org, dest) {    return this.split(org).join(dest);}]]></FunctionScript>        </CommonFunction>    </CommonInfo>    <CONDITION>        <EssentialScreenInfo ESSENTIAL="PDT_GUD_MRKTNG_WRCNT_RQSD_Yobj=상품안내마케팅동의서징구여부=02" SCD_ID="TST_999999999">            <SimulatorEssentialInfo APP_DCD="TST" ESSENTIAL="PDT_GUD_MRKTNG_WRCNT_RQSD_YN=상품안내마케팅동의서징구여부=02@PDT_GUD_MRKTNG_WRCNT_RQSD_YN2=상품안내마케팅동의서징구여부2=03"/>            <FunctionScript DEFAULT_BIZ_PRCS_ID=""><![CDATA[            var test = 0;function OnPreOpenProcess(){	//999999999 함수	if(PDT_GUD_MRKTNG_WRCNT_RQSD_YN == "10") {	    setProcessId("TST_999999999_F_002"); //고객기본정보관리TEST	}else {	    setProcessId("TST_999999999_F_001"); //프로세스ID	    ///////  	}}]]></FunctionScript>        </EssentialScreenInfo>    </CONDITION></ConditionXML>

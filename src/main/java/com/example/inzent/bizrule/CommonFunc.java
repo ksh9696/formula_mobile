@@ -6,6 +6,7 @@ public class CommonFunc {
             "        processId = val;\n" +
             "    }\n" +
             "    function getProcessId(){\n" +
-            "        return processId;\n" +
+            " test = test +1;"+
+            "        return test;\n" +
             "    }";
 }
